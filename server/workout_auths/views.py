@@ -1,10 +1,20 @@
 from rest_framework import status, permissions
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from common.global_response import WorkoutResponse
+from workout_auths.serializer import WorkoutTokenCustomSerializer
 
 
 # Create your views here.
+class WorkoutRefreshTokenPairView(TokenRefreshView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = WorkoutTokenCustomSerializer
+
+
+class WorkoutTokenPairView(TokenObtainPairView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = WorkoutTokenCustomSerializer
 
 
 class MyAPIView(APIView):
