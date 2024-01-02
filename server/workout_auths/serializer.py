@@ -4,6 +4,7 @@ from rest_framework_simplejwt.serializers import (
     TokenRefreshSerializer,
 )
 from rest_framework_simplejwt.state import token_backend
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class WorkoutRefreshTokenCustomSerializer(TokenRefreshSerializer):
@@ -11,14 +12,12 @@ class WorkoutRefreshTokenCustomSerializer(TokenRefreshSerializer):
         data = super(WorkoutRefreshTokenCustomSerializer, self).validate(attrs)
         decode_access_token = token_backend.decode(data["access"], verify=True)
 
-        access_token = data["access"]
-        refresh_token = self.token_class(attrs["refresh"])
-
-        data["access"] = access_token
-        data["refresh"] = str(refresh_token)
-
         user_model = get_user_model()
         user = user_model.objects.get(uuid=decode_access_token.get("user_id"))
+        refresh_token = RefreshToken.for_user(user)
+        data["refresh"] = str(refresh_token)
+        user.refresh_token = refresh_token
+        user.save()
 
         data["nickname"] = user.nickname
         data["phone_number"] = user.phone_number

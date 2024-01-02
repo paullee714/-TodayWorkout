@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import (
 from workout_auths.views import (
     WorkoutTokenPairView,
     WorkoutRefreshTokenPairView,
+    VerifyMeView,
 )
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
         name="token_refresh",
     ),
     path("token/verify", TokenVerifyView.as_view(), name="token_verify"),
+    path("verify-me", VerifyMeView.as_view(), name="verify_me"),
 ]
