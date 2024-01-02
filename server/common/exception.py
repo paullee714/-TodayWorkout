@@ -5,6 +5,10 @@ from common.global_response import WorkoutResponse
 
 def handle_exception(exc, context):
     response = exception_handler(exc, context)
+    print("###################")
+    print(exc)
+    print(context)
+    print("###################")
     if response is not None:
         # Get the message from the exception, if available
         try:

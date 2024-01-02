@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-g3ru_(60dqwon5)=2#z#a)#j*j=7hc@w8m-8&tfog-eqls_0dz"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -141,7 +141,10 @@ AUTH_USER_MODEL = "workout_auths.WorkoutUserModel"
 
 ## REST FRAMEWORK SETTINGS
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
+    ),
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
         # "rest_framework.authentication.SessionAuthentication",

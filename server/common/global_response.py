@@ -1,47 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import status
 
-# def common_response(
-#     data=None, status=HTTPStatus.OK, message=None, result=None
-# ) -> JsonResponse:
-#     if data is None:
-#         data = []
-#     return JsonResponse(
-#         {
-#             "result": result,
-#             "message": message if message else status.phrase,
-#             "data": data,
-#         },
-#         status=status,
-#     )
-#
-#
-# def unauthorized_response():
-#     return common_response(
-#         data=None,
-#         result="fail",
-#         message="사용자 정보가 일치하지 않습니다.",
-#         status=HTTPStatus.UNAUTHORIZED,
-#     )
-#
-#
-# def internal_server_error(error_cause=None):
-#     return common_response(
-#         data=None,
-#         result="fail",
-#         message="INTERNAL SERVER ERROR" if error_cause is None else error_cause,
-#         status=HTTPStatus.INTERNAL_SERVER_ERROR,
-#     )
-#
-#
-# def bad_request_response(error_cause=None):
-#     return common_response(
-#         data=None,
-#         result="fail",
-#         message="BAD REQUEST ERROR" if error_cause is None else error_cause,
-#         status=HTTPStatus.BAD_REQUEST,
-#     )
-
 
 class WorkoutResponse(Response):
     def __init__(
@@ -51,12 +10,11 @@ class WorkoutResponse(Response):
         message=None,
     ):
         if res_status == status.HTTP_200_OK:
-            message = "조회에 성공했습니다."
+            message = "조회에 성공했습니다." if message is None else message
         elif res_status == status.HTTP_201_CREATED:
-            message = "저장에 성공했습니다."
+            message = "저장에 성공했습니다." if message is None else message
         else:
-            if message is None:
-                message = "에러가 발생했습니다."
+            message = "에러가 발생했습니다." if message is None else message
 
         # Define your custom structure
         custom_data = {
