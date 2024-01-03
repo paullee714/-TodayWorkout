@@ -35,9 +35,6 @@ class JWTAuthTests(APITestCase):
     def test_token_refresh(self):
         # Test token refresh
         refresh = RefreshToken.for_user(self.user)
-        print("#")
-        print(refresh)
-        print("#")
         response = self.client.post(reverse("token_refresh"), {"refresh": str(refresh)})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue("access" in response.data.get("data"))
