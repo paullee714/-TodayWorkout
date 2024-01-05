@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import 'package:permission_handler/permission_handler.dart';
+
 class CreateFeedsPage extends StatefulWidget {
   @override
   _CreateFeedPageState createState() => _CreateFeedPageState();
@@ -56,36 +58,71 @@ class _CreateFeedPageState extends State<CreateFeedsPage> {
     }
   }
 
-  void _showPhotoOptions(BuildContext context) {
-    showCupertinoModalPopup(
+  void _showPermissionAlert(BuildContext context) {
+    showCupertinoDialog(
       context: context,
-      builder: (BuildContext context) => CupertinoActionSheet(
-        title: const Text('Choose Options'),
-        message: const Text('사진 첨부에 사용 할 옵션을 선택 해 주세요.'),
-        actions: <Widget>[
-          CupertinoActionSheetAction(
-            child: const Text('📷 Take Photo'),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Permission Denied'),
+          content: Text('Settings > Today Workout > 카메라 / 사진 접근 권한을 설정 해 주세요.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                openAppSettings();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPhotoOptions(BuildContext context) async {
+    var cameraStatus = await Permission.camera.status;
+    var photosStatus = await Permission.photos.status;
+
+    // Request permissions if not already granted
+    if (!cameraStatus.isGranted) {
+      cameraStatus = await Permission.camera.request();
+    }
+    if (!photosStatus.isGranted) {
+      photosStatus = await Permission.photos.request();
+    }
+    if (cameraStatus.isGranted && photosStatus.isGranted) {
+      showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) => CupertinoActionSheet(
+          title: const Text('Choose Options'),
+          message: const Text('사진 첨부에 사용 할 옵션을 선택 해 주세요.'),
+          actions: <Widget>[
+            CupertinoActionSheetAction(
+              child: const Text('📷 Take Photo'),
+              onPressed: () {
+                Navigator.pop(context);
+                _takePicture(); // Your function to take a photo
+              },
+            ),
+            CupertinoActionSheetAction(
+              child: const Text('🖼️ Choose Photo'),
+              onPressed: () {
+                Navigator.pop(context);
+                _pickImages(); // Your function to choose from album
+              },
+            )
+          ],
+          cancelButton: CupertinoActionSheetAction(
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.pop(context);
-              _takePicture(); // Your function to take a photo
             },
           ),
-          CupertinoActionSheetAction(
-            child: const Text('🖼️ Choose Photo'),
-            onPressed: () {
-              Navigator.pop(context);
-              _pickImages(); // Your function to choose from album
-            },
-          )
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          child: const Text('Cancel'),
-          onPressed: () {
-            Navigator.pop(context);
-          },
         ),
-      ),
-    );
+      );
+    } else {
+      _showPermissionAlert(context);
+    }
   }
 
   void postFeed() {
