@@ -95,11 +95,12 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.newspaper_sharp),
+            // icon: Icon(Icons.checklist_outlined),
+            icon: Icon(Icons.newspaper_outlined),
             label: 'Feed',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add_box),
+            icon: Icon(Icons.add_box_outlined),
             label: 'Create Feed',
           ),
           BottomNavigationBarItem(
