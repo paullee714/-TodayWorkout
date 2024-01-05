@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -43,6 +44,50 @@ class _CreateFeedPageState extends State<CreateFeedsPage> {
     }
   }
 
+  Future<void> _takePicture() async {
+    final XFile? image =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image != null) {
+      // Process the captured image
+      // _image = File(pickedFile.path);
+      setState(() {
+        _images = [File(image.path)];
+      });
+    }
+  }
+
+  void _showPhotoOptions(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('Choose Options'),
+        message: const Text('사진 첨부에 사용 할 옵션을 선택 해 주세요.'),
+        actions: <Widget>[
+          CupertinoActionSheetAction(
+            child: const Text('📷 Take Photo'),
+            onPressed: () {
+              Navigator.pop(context);
+              _takePicture(); // Your function to take a photo
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: const Text('🖼️ Choose Photo'),
+            onPressed: () {
+              Navigator.pop(context);
+              _pickImages(); // Your function to choose from album
+            },
+          )
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          child: const Text('Cancel'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+    );
+  }
+
   void postFeed() {
     // Here, you would normally handle the logic for posting the feed.
     // This could involve sending data to a backend server, for instance.
@@ -58,7 +103,7 @@ class _CreateFeedPageState extends State<CreateFeedsPage> {
       children: <Widget>[
         // Top bar
         _TopBar(
-          pickImages: _pickImages,
+          choosePhoto: () => _showPhotoOptions(context),
         ),
         _ContentsArea(
           carouselController: _carouselController,
@@ -78,10 +123,14 @@ class _CreateFeedPageState extends State<CreateFeedsPage> {
 }
 
 class _TopBar extends StatelessWidget {
-  final VoidCallback pickImages;
+  // final VoidCallback pickImages;
+  // final VoidCallback takePhotoImages;
+  final VoidCallback choosePhoto;
 
-  const _TopBar({super.key, required this.pickImages});
+  const _TopBar({super.key, required this.choosePhoto});
 
+  // const _TopBar(
+  //     {super.key, required this.pickImages, required this.takePhotoImages});
   @override
   Widget build(BuildContext context) {
     return Positioned(
@@ -95,7 +144,8 @@ class _TopBar extends StatelessWidget {
           children: <Widget>[
             IconButton(
               icon: Icon(
-                Icons.cancel,
+                // Icons.cancel,
+                Icons.arrow_back,
                 color: Colors.black,
               ),
               onPressed: () => {
@@ -105,9 +155,62 @@ class _TopBar extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.photo),
-                  onPressed: pickImages,
+                // TextButton(
+                //   onPressed: takePhotoImages,
+                //   child: Row(
+                //     children: [
+                //       Icon(
+                //         Icons.camera_alt,
+                //         color: Colors.black,
+                //       ),
+                //       SizedBox(width: 5),
+                //       Text(
+                //         'Take Photo',
+                //         style: TextStyle(
+                //             color: Colors.black,
+                //             fontWeight: FontWeight.w700,
+                //             fontSize: 16),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // TextButton(
+                //   onPressed: pickImages,
+                //   child: Row(
+                //     children: [
+                //       Icon(
+                //         Icons.photo,
+                //         color: Colors.black,
+                //       ),
+                //       SizedBox(width: 5),
+                //       Text(
+                //         'Album',
+                //         style: TextStyle(
+                //             color: Colors.black,
+                //             fontWeight: FontWeight.w700,
+                //             fontSize: 16),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                TextButton(
+                  onPressed: choosePhoto,
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.photo,
+                        color: Colors.black,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Photo',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16),
+                      ),
+                    ],
+                  ),
                 ),
                 TextButton(
                   onPressed: () {
@@ -173,7 +276,7 @@ class _ContentsAreaState extends State<_ContentsArea> {
                       CarouselSlider(
                         carouselController: widget.carouselController,
                         options: CarouselOptions(
-                          height: 300.0,
+                          height: 200.0,
                           enlargeCenterPage: true,
                           autoPlay: autoPlayBoolean,
                           aspectRatio: 16 / 9,
@@ -218,15 +321,20 @@ class _ContentsAreaState extends State<_ContentsArea> {
                 )
               : Container(),
           SizedBox(height: 20),
-          TextField(
-            controller: widget.textController,
-            focusNode: widget.focusNode,
-            decoration: const InputDecoration(
-              hintText: "What's on your mind?",
-              border: InputBorder.none,
+          Container(
+            height: 100.0,
+            child: SingleChildScrollView(
+              child: TextField(
+                controller: widget.textController,
+                focusNode: widget.focusNode,
+                decoration: const InputDecoration(
+                  hintText: "What's on your mind?",
+                  border: InputBorder.none,
+                ),
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+              ),
             ),
-            keyboardType: TextInputType.multiline,
-            maxLines: null,
           ),
         ],
       ),
